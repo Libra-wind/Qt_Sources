@@ -28,10 +28,10 @@ public:
     {
         if (Dialog->objectName().isEmpty())
             Dialog->setObjectName(QString::fromUtf8("Dialog"));
-        Dialog->resize(513, 359);
+        Dialog->resize(400, 300);
         label = new QLabel(Dialog);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(230, 170, 48, 16));
+        label->setGeometry(QRect(170, 120, 81, 31));
 
         retranslateUi(Dialog);
 
@@ -41,7 +41,7 @@ public:
     void retranslateUi(QDialog *Dialog)
     {
         Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("Dialog", "HelloQt!", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("Dialog", "HelloWorld", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
