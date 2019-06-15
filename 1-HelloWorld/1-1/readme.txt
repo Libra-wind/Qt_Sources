@@ -1,1 +1,0 @@
-使用ui文件，生成helloWorld
