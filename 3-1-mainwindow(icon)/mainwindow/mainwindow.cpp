@@ -1,5 +1,7 @@
+#include <QtGui>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 //使用图标的方法
 /* 1、源代码目录下新建文件夹，
  * 2、编写.qrc文件
@@ -22,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(tr("图标测试窗口"));
     setWindowIcon(QIcon(":/images/folder.png"));
 
+    fileNewAction = new QAction(tr("&New"), this);
+    fileNewAction->setShortcut(QKeySequence::New);
+    fileNewAction->setStatusTip(tr("Create a New file"));
+    //setCentralWidget(spreadsheet);
+    connect(fileNewAction, SIGNAL(triggered(bool)), this, SLOT(newfile()));
 
     aboutQtAction = new QAction(tr("About &Qt"), this);
     aboutQtAction->setStatusTip(tr("Show the Qt Library's About box"));
@@ -34,13 +41,24 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(exitQtAction, SIGNAL(triggered(bool)), this, SLOT(close()));
 
     fileMenu = menuBar()->addMenu(tr("&File"));
-
+    fileMenu->addAction(fileNewAction);
     fileMenu->addAction(aboutQtAction);
     fileMenu->addSeparator();//加入分割线
     fileMenu->addAction(exitQtAction);
 
     addAction(exitQtAction);
     setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    locationLabel = new QLabel(tr(" W999 "));
+    locationLabel->setAlignment(Qt::AlignHCenter);
+    locationLabel->setMinimumSize(locationLabel->sizeHint());
+
+    formulaLabel = new QLabel;
+    formulaLabel->setIndent(3);
+
+    statusBar()->addWidget(locationLabel);
+    statusBar()->addWidget(formulaLabel,1);
+
 
     fileToolBar = addToolBar(tr("&File"));
     fileToolBar->addAction(aboutQtAction);
@@ -52,4 +70,35 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::newfile()
+{
+    if(okTocontinue())
+    {
+        qDebug() << "成功新建" << endl;
+
+    }
+}
+bool MainWindow::okTocontinue()
+{
+
+    if(1)
+    {
+        int res = QMessageBox::warning(this, tr("SpreadSheet"),
+                                       tr("The document has been modified.\n"
+                                          "Do you want to save your changes?"),
+                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if(res == QMessageBox::Yes)
+        {
+            qDebug() << "Yes" << endl;
+            return true;
+        }
+        else if(res == QMessageBox::Cancel)
+            return false;
+
+
+    }
+    return true;
+
 }
