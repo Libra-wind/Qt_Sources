@@ -20,12 +20,13 @@ public:
     ~MainWindow();
 public slots:
     void newfile();
-
+    void openfile();
 private:
     Ui::MainWindow *ui;
 
     QAction *aboutQtAction;
     QAction *exitQtAction;
+    QAction *openQtAction;
     QAction *fileNewAction;
     QMenu *fileMenu;
     QToolBar *fileToolBar;

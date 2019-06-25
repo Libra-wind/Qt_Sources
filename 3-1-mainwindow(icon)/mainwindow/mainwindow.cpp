@@ -35,6 +35,12 @@ MainWindow::MainWindow(QWidget *parent) :
     aboutQtAction->setIcon(QIcon(":/images/notebook.png"));
     connect(aboutQtAction, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
+    openQtAction = new QAction(tr("&Open"), this);
+    openQtAction->setShortcut(tr("Ctrl+O"));
+    openQtAction->setStatusTip(tr("Open a exist file"));
+    connect(openQtAction, SIGNAL(triggered(bool)), this, SLOT(openfile()));
+
+
     exitQtAction = new QAction(tr("&Exit"), this);
     exitQtAction->setShortcut(tr("Ctrl+Q"));
     exitQtAction->setStatusTip("Exit the applicatio");
@@ -42,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(fileNewAction);
+    fileMenu->addAction(openQtAction);
     fileMenu->addAction(aboutQtAction);
     fileMenu->addSeparator();//加入分割线
     fileMenu->addAction(exitQtAction);
@@ -80,6 +87,23 @@ void MainWindow::newfile()
 
     }
 }
+
+void MainWindow::openfile()
+{
+    if(okTocontinue())
+    {
+        QString filename = QFileDialog::getOpenFileName(this, tr("Open Spreadsheet"), ".",
+                                                        tr("Spreadsheet file(*.png)"));
+        if(!filename.isEmpty())
+        {
+            qDebug() << filename << endl;
+        }
+        else
+            qDebug() << filename << endl;
+    }
+
+}
+
 bool MainWindow::okTocontinue()
 {
 
