@@ -1,0 +1,13 @@
+<RCC>
+<qresource>
+<file>images/保存.png</file>
+<file>images/查找.png</file>
+<file>images/打开文件.png</file>
+<file>images/复制.png</file>
+<file>images/剪切.png</file>
+<file>images/文件.png</file>
+<file>images/icon.png</file>
+<file>images/右箭头.png</file>
+<file>images/粘贴.png</file>
+</qresource>
+</RCC>
