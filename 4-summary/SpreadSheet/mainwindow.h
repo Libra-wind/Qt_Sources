@@ -17,16 +17,42 @@ private:
     QLabel *formulaLabel;
 
     QMenu *fileMenu;
-
-
-
     QAction* newAction;
+    QAction* openAction;
     QAction* exitAction;
+    QAction* saveAction;
+    QAction* saveasAction;
 
+
+    QMenu* toolMenu;
+    QAction* recAction;
+    QAction* sortAction;
 
     QMenu *helpMenu;
     QAction *aboutAction;
     QAction *aboutQtAction;
+
+
+
+    QMenu* editMenu;
+
+    QAction* cutAction;
+    QAction* copyAction;
+    QAction* pasteAction;
+    QAction* delAction;
+//    QAction* selAction;
+    QAction* findAction;
+    QAction* go2cellAction;
+
+    QMenu* selSubMenu;
+    QAction* selRowAction;
+    QAction* selColAction;
+    QAction* selAllAction;
+
+    QMenu* optMenu;
+    QAction* showGridAction;
+    QAction* autoRclAction;
+
 };
 
 #endif // MAINWINDOW_H
