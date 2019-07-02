@@ -1,5 +1,5 @@
 
-
+QT += widgets
 
 RESOURCES = spreadsheet.qrc
 

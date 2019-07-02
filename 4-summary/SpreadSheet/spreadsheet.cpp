@@ -40,10 +40,22 @@ QString Spreadsheet::currentLocation() const
     return QChar('A'+currentColumn())+QString::number(currentRow()+1);
 }
 
+QString Spreadsheet::currentFormula() const
+{
+    Cell* c = cell(currentRow(), currentColumn());
+    if(c)
+        return c->formula();
+    else
+        return "";
+}
+
 void Spreadsheet::somethingChange()
 {
+    qDebug() << "emit modified" << endl;
     emit Spreadsheet::modified();
 }
+
+
 
 Cell *Spreadsheet::cell(int row, int col) const
 {

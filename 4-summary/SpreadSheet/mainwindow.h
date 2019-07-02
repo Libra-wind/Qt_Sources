@@ -8,9 +8,12 @@ class QLabel;
 
 class MainWindow : public QMainWindow
 {
+    Q_OBJECT
 public:
     MainWindow();
 
+    void setCurFile(const QString &filename);
+    QString strippedName(const QString &fullFileName);
 private:
     Spreadsheet *spreadsheet;
     QLabel *locationLabel;
@@ -54,6 +57,13 @@ private:
     QAction* autoRclAction;
 
     bool okTocontinue();
+private:
+    QString curFile;
+    QStringList recentFiles;
+private slots:
+    void spreadsheetModified();
+    void updateStatusBar();
+    void newFile();
 };
 
 #endif // MAINWINDOW_H

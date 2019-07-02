@@ -13,10 +13,12 @@ public:
     Spreadsheet(QWidget *parent = 0);
     void clear();
     QString currentLocation() const;
+    QString currentFormula() const;
 signals:
     void modified();
 private slots:
     void somethingChange();
+
 private:
     enum{
         MagicNumber = 0x7F51C883,

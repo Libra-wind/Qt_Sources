@@ -27,7 +27,7 @@ QTableWidgetItem* Cell::clone() const
 
 QString Cell::formula() const
 {
-    qDebug() << "Cell formula" << endl;
+//    qDebug() << "Cell formula" << endl;
     return data(Qt::EditRole).toString();
 
 }
@@ -47,7 +47,7 @@ void Cell::setData(int role, const QVariant &value)
 
 QVariant Cell::data(int role) const
 {
-    qDebug() << "Cell data" << endl;
+//    qDebug() << "Cell data" << endl;
     if(Qt::DisplayRole == role)
     {
         if(value().isValid()){
@@ -75,7 +75,7 @@ int Cell::getCountValue()
 const QVariant Invalid;
 QVariant Cell::value() const
 {
-    qDebug() << "Cell value" << endl;
+//    qDebug() << "Cell value" << endl;
     if(cacheIsDirty)
     {
         cacheIsDirty = false;

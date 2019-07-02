@@ -12,7 +12,7 @@ MainWindow::MainWindow()
     newAction->setIcon(QIcon(":/icons/new.png"));
     newAction->setStatusTip(tr("Create a new file"));
     newAction->setShortcut(QKeySequence::New);
-
+    connect(newAction, SIGNAL(triggered(bool)), this, SLOT(newFile()));
     openAction = new QAction(tr("&Open"), this);
     openAction->setIcon(QIcon(":/icons/open.png"));
     openAction->setStatusTip(tr("Open a exist file"));
@@ -144,11 +144,64 @@ MainWindow::MainWindow()
     statusBar()->addWidget(locationLabel);
     statusBar()->addWidget(formulaLabel, 1);
 
+    connect(spreadsheet, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(updateStatusBar()));
+    connect(spreadsheet, SIGNAL(modified()),
+            this, SLOT(spreadsheetModified()));
     //设置窗口图标
     setWindowIcon(QIcon(":/icons/icon.png"));
+
+
+    spreadsheet->addAction(cutAction);
+    spreadsheet->addAction(copyAction);
+    spreadsheet->addAction(pasteAction);
+
+    spreadsheet->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    updateStatusBar();
 }
 
-#if 0
+void MainWindow::newFile()
+{
+    if(okTocontinue())
+    {
+        spreadsheet->clear();
+        setCurFile("");
+    }
+}
+
+void MainWindow::setCurFile(const QString &filename)
+{
+    curFile = filename;
+    setWindowModified(false);
+    QString shownName = tr("Untitled");
+    if(!curFile.isEmpty())
+    {
+        shownName = strippedName(curFile);
+        recentFiles.removeAll(curFile);
+        recentFiles.prepend(curFile);
+        //updateRecentFileActions();
+    }
+    setWindowTitle(tr("%1[*]-%2").arg(shownName).arg(tr("Spreadsheet")));
+}
+
+QString MainWindow::strippedName(const QString &fullFileName)
+{
+    return QFileInfo(fullFileName).fileName();
+}
+
+void MainWindow::updateStatusBar()
+{
+    locationLabel->setText(spreadsheet->currentLocation());
+    formulaLabel->setText(spreadsheet->currentFormula());
+}
+
+void MainWindow::spreadsheetModified()
+{
+    setWindowModified(true);
+    updateStatusBar();
+}
+
+#if 1
 bool MainWindow::okTocontinue()
 {
     if(isWindowModified())
@@ -156,13 +209,13 @@ bool MainWindow::okTocontinue()
         int r = QMessageBox::warning(this, tr("Spreadsheet"), tr("The document has been modified,.\nDo you want to save your change"),
                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if(r == QMessageBox::Yes)
-            return save();
-
+            return false;//save();
+        else if(r == QMessageBox::Cancel)
+            return false;
 
     }
 
-
-
+    return true;
 }
 
 #endif
