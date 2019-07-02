@@ -148,3 +148,21 @@ MainWindow::MainWindow()
     setWindowIcon(QIcon(":/icons/icon.png"));
 }
 
+#if 0
+bool MainWindow::okTocontinue()
+{
+    if(isWindowModified())
+    {
+        int r = QMessageBox::warning(this, tr("Spreadsheet"), tr("The document has been modified,.\nDo you want to save your change"),
+                                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if(r == QMessageBox::Yes)
+            return save();
+
+
+    }
+
+
+
+}
+
+#endif

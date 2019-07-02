@@ -53,6 +53,7 @@ private:
     QAction* showGridAction;
     QAction* autoRclAction;
 
+    bool okTocontinue();
 };
 
 #endif // MAINWINDOW_H
