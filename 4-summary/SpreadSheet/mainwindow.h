@@ -56,14 +56,27 @@ private:
     QAction* showGridAction;
     QAction* autoRclAction;
 
+    enum{MaxRecentFiles = 5};
+    QAction* recentFileActions[MaxRecentFiles];
+    QAction* separatorAction;
+
     bool okTocontinue();
+    void updateRecentFileActions();
+protected:
+    void closeEvent(QCloseEvent *event);
 private:
     QString curFile;
     QStringList recentFiles;
+    bool loadFile(const QString &fileName);
 private slots:
     void spreadsheetModified();
     void updateStatusBar();
     void newFile();
+    void open();
+    bool save();
+    bool saveFile(const QString &filename);
+    bool saveAs();
+    void openRecentFile();
 };
 
 #endif // MAINWINDOW_H

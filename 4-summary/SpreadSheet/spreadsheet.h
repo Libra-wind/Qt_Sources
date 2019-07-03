@@ -12,6 +12,8 @@ class Spreadsheet : public QTableWidget
 public:
     Spreadsheet(QWidget *parent = 0);
     void clear();
+    bool writeFile(const QString &filename);
+    bool readFile(const QString &filename);
     QString currentLocation() const;
     QString currentFormula() const;
 signals:

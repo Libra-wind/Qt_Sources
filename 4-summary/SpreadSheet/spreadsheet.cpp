@@ -35,6 +35,74 @@ void Spreadsheet::clear()
     setCurrentCell(0,0);
 }
 
+bool Spreadsheet::writeFile(const QString &filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::warning(this, tr("Spreadsheet"), tr("Cannot write file %1:\n%2.").arg(file.fileName().arg(file.errorString())));
+        return false;
+    }
+
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_3);
+    out << quint32(MagicNumber);
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    for(int row = 0; row < RowCount; row++)
+    {
+        for(int col = 0; col < ColumnCount; col++)
+        {
+            QString str = formula(row, col);
+            if(!str.isEmpty())
+            {
+                out << quint16(row) << quint16(col) << str;
+            }
+        }
+    }
+    QApplication::restoreOverrideCursor();
+    return true;
+
+
+
+
+}
+
+bool Spreadsheet::readFile(const QString &filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(this, tr("Spreadsheet"), tr("Cannot read %1:\n%2.").arg(file.fileName()).arg(file.errorString()));
+        return false;
+    }
+
+    QDataStream in(&file);
+
+    in.setVersion(QDataStream::Qt_4_3);
+    quint32 magic;
+    in >> magic;
+
+    if(magic != MagicNumber)
+    {
+        QMessageBox::warning(this, tr("Spreadsheet"), tr("The file is not a Spreadsheet file."));
+        return false;
+    }
+    clear();
+    quint16 row;
+    quint16 col;
+    QString str;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    while(!in.atEnd())
+    {
+        in >> row >> col >> str;
+
+        setFormula(row, col, str);
+    }
+    QApplication::restoreOverrideCursor();
+    return true;
+}
+
 QString Spreadsheet::currentLocation() const
 {
     return QChar('A'+currentColumn())+QString::number(currentRow()+1);
@@ -51,7 +119,7 @@ QString Spreadsheet::currentFormula() const
 
 void Spreadsheet::somethingChange()
 {
-    qDebug() << "emit modified" << endl;
+
     emit Spreadsheet::modified();
 }
 
@@ -74,7 +142,7 @@ QString Spreadsheet::text(int row, int col) const
 QString Spreadsheet::formula(int row, int col) const
 {
     Cell *c = cell(row, col);
-    qDebug() << "Spreadsheet formula" << endl;
+
     if(c == NULL)
         return "";
     else

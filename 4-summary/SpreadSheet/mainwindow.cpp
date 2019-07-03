@@ -17,16 +17,27 @@ MainWindow::MainWindow()
     openAction->setIcon(QIcon(":/icons/open.png"));
     openAction->setStatusTip(tr("Open a exist file"));
     openAction->setShortcut(QKeySequence::Open);
+    connect(openAction, SIGNAL(triggered(bool)), this, SLOT(open()));
+
 
     saveAction = new QAction(tr("&Save"), this);
     saveAction->setIcon(QIcon(":/icons/save.png"));
     saveAction->setStatusTip(tr("Save file"));
     saveAction->setShortcut(tr("Ctrl+S"));
-
+    connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(save()));
 
     saveasAction = new QAction(tr("Save &As..."), this);
     saveasAction->setStatusTip(tr("Save file As"));
-//    saveasAction->setShortcut(tr("Ctrl+S"));
+    connect(saveasAction, SIGNAL(triggered(bool)), this, SLOT(saveAs()));
+
+    for(int i = 0; i < MaxRecentFiles; i++ )
+    {
+        recentFileActions[i] = new QAction(this);
+        recentFileActions[i]->setVisible(false);
+        connect(recentFileActions[i], SIGNAL(triggered(bool)),
+                this, SLOT(openRecentFile()));
+    }
+
 
     exitAction = new QAction(tr("&Exit"), this);
     exitAction->setStatusTip(tr("Exit the application"));
@@ -40,8 +51,11 @@ MainWindow::MainWindow()
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
     fileMenu->addAction(saveasAction);
-    fileMenu->addSeparator();
-
+    separatorAction = fileMenu->addSeparator();
+    for(int i = 0; i < MaxRecentFiles; i++)
+    {
+        fileMenu->addAction(recentFileActions[i]);
+    }
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
@@ -158,6 +172,8 @@ MainWindow::MainWindow()
     spreadsheet->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     updateStatusBar();
+
+    setCurFile("");
 }
 
 void MainWindow::newFile()
@@ -167,6 +183,75 @@ void MainWindow::newFile()
         spreadsheet->clear();
         setCurFile("");
     }
+}
+
+void MainWindow::open()
+{
+    if(okTocontinue())
+    {
+        QString fileName = QFileDialog::getOpenFileName(this,
+                                                        tr("Open Spreadsheet"), "F:/Qt/Qt_Sources/4-summary/testfile/",
+                                                        tr("Spreadsheet files(*.sp)"));
+        if(!fileName.isEmpty())
+        {
+            loadFile(fileName);
+        }
+    }
+}
+
+bool MainWindow::save()
+{
+    if(curFile.isEmpty())
+    {
+        return saveAs();
+    }
+    else
+        return saveFile(curFile);
+}
+
+bool MainWindow::saveFile(const QString &filename)
+{
+    if(!spreadsheet->writeFile(filename))
+    {
+        statusBar()->showMessage(tr("Saving canceled"), 2000);
+        return false;
+    }
+
+    setCurFile(filename);
+    statusBar()->showMessage(tr("File saved"), 2000);
+    return true;
+}
+
+bool MainWindow::saveAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Spreadsheet"), "F:/Qt/Qt_Sources/4-summary/testfile/",
+                                                    tr("Spreadsheet files (*.sp)"));
+    if(filename.isEmpty())
+        return false;
+    return saveFile(filename);
+}
+
+void MainWindow::openRecentFile()
+{
+    if(okTocontinue())
+    {
+        QAction *action = qobject_cast<QAction*>(sender());
+        if(action)
+            loadFile(action->data().toString());
+    }
+}
+
+bool MainWindow::loadFile(const QString &fileName)
+{
+    if(!spreadsheet->readFile(fileName))
+    {
+        statusBar()->showMessage(tr("Loading canceled"), 2000);
+        return false;
+    }
+
+    setCurFile(fileName);
+    statusBar()->showMessage(tr("File loaded"), 2000);
+    return true;
 }
 
 void MainWindow::setCurFile(const QString &filename)
@@ -179,7 +264,8 @@ void MainWindow::setCurFile(const QString &filename)
         shownName = strippedName(curFile);
         recentFiles.removeAll(curFile);
         recentFiles.prepend(curFile);
-        //updateRecentFileActions();
+        qDebug() << recentFiles.count() << endl;
+        updateRecentFileActions();
     }
     setWindowTitle(tr("%1[*]-%2").arg(shownName).arg(tr("Spreadsheet")));
 }
@@ -209,13 +295,51 @@ bool MainWindow::okTocontinue()
         int r = QMessageBox::warning(this, tr("Spreadsheet"), tr("The document has been modified,.\nDo you want to save your change"),
                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if(r == QMessageBox::Yes)
-            return false;//save();
+            return save();
         else if(r == QMessageBox::Cancel)
             return false;
 
     }
 
     return true;
+}
+
+void MainWindow::updateRecentFileActions()
+{
+    QMutableStringListIterator i(recentFiles);
+    qDebug() << "310" << recentFiles.count() << endl;
+    while(i.hasNext())
+    {
+        if(!QFile::exists(i.next()))
+            i.remove();
+    }
+    qDebug() << "316" << recentFiles.count() << endl;
+    for(int j = 0; j < MaxRecentFiles; j++)
+    {
+        qDebug() << recentFiles.count() << endl;
+        if(j < recentFiles.count())
+        {
+
+            QString text = tr("&%2").arg(strippedName(recentFiles[j]));
+            recentFileActions[j]->setText(text);
+            recentFileActions[j]->setData(recentFiles[j]);
+            recentFileActions[j]->setVisible(true);
+        }
+        else
+            recentFileActions[j]->setVisible(false);
+    }
+    separatorAction->setVisible(!recentFiles.isEmpty());
+}
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(okTocontinue())
+    {
+        event->accept();
+    }
+    else
+        event->ignore();
 }
 
 #endif
