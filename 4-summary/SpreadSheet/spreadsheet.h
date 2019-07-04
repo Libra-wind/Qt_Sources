@@ -16,11 +16,17 @@ public:
     bool readFile(const QString &filename);
     QString currentLocation() const;
     QString currentFormula() const;
+    QTableWidgetSelectionRange selectedRange() const;
 signals:
     void modified();
 private slots:
     void somethingChange();
-
+    void cut();
+    void copy();
+    void paste();
+    void del();
+    void selectCurRow();
+    void selectCurCol();
 private:
     enum{
         MagicNumber = 0x7F51C883,

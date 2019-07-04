@@ -22,7 +22,7 @@ static const uint qt_meta_data_Spreadsheet[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -34,12 +34,20 @@ static const uint qt_meta_data_Spreadsheet[] = {
 
  // slots: signature, parameters, type, tag, flags
       24,   12,   12,   12, 0x08,
+      42,   12,   12,   12, 0x08,
+      48,   12,   12,   12, 0x08,
+      55,   12,   12,   12, 0x08,
+      63,   12,   12,   12, 0x08,
+      69,   12,   12,   12, 0x08,
+      84,   12,   12,   12, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_Spreadsheet[] = {
     "Spreadsheet\0\0modified()\0somethingChange()\0"
+    "cut()\0copy()\0paste()\0del()\0selectCurRow()\0"
+    "selectCurCol()\0"
 };
 
 void Spreadsheet::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -50,6 +58,12 @@ void Spreadsheet::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         switch (_id) {
         case 0: _t->modified(); break;
         case 1: _t->somethingChange(); break;
+        case 2: _t->cut(); break;
+        case 3: _t->copy(); break;
+        case 4: _t->paste(); break;
+        case 5: _t->del(); break;
+        case 6: _t->selectCurRow(); break;
+        case 7: _t->selectCurCol(); break;
         default: ;
         }
     }
@@ -88,9 +102,9 @@ int Spreadsheet::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 8;
     }
     return _id;
 }

@@ -8,6 +8,8 @@ MainWindow::MainWindow()
 
     setCentralWidget(spreadsheet);
 
+
+
     newAction = new QAction(tr("&New"), this);
     newAction->setIcon(QIcon(":/icons/new.png"));
     newAction->setStatusTip(tr("Create a new file"));
@@ -66,18 +68,18 @@ MainWindow::MainWindow()
     cutAction = new QAction(tr("Cu&t"), this);
     cutAction->setIcon(QIcon(":/icons/cut.png"));
     cutAction->setShortcut(QKeySequence::Cut);
-
+    connect(cutAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(cut()));
     copyAction = new QAction(tr("&Copy"), this);
     copyAction->setIcon(QIcon(":/icons/copy.png"));
     copyAction->setShortcut(QKeySequence::Copy);
-
+    connect(copyAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(copy()));
     pasteAction = new QAction(tr("&Paste"), this);
     pasteAction->setIcon(QIcon(":/icons/paste.png"));
     pasteAction->setShortcut(QKeySequence::Paste);
-
+    connect(pasteAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(paste()));
     delAction = new QAction(tr("&Delete"), this);
     delAction->setShortcut(QKeySequence::Delete);
-
+    connect(delAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(del()));
     //selAction = new QAction(tr("&Select"), this);
 
     findAction = new QAction(tr("&Find.."), this);
@@ -96,9 +98,12 @@ MainWindow::MainWindow()
     selSubMenu = editMenu->addMenu(tr("&Select"));
 
     selRowAction = new QAction(tr("&Row"), this);
+    connect(selRowAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(selectCurRow()));
     selColAction = new QAction(tr("&Column"), this);
-    selAllAction = new QAction(tr("&All"), this);
+    connect(selColAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(selectCurCol()));
+    selAllAction = new QAction(tr("&All"), this);    
     selAllAction->setShortcut(tr("Ctrl+A"));
+    connect(selAllAction, SIGNAL(triggered(bool)), spreadsheet, SLOT(selectAll()));
     selSubMenu->addAction(selRowAction);
     selSubMenu->addAction(selColAction);
     selSubMenu->addAction(selAllAction);
@@ -170,6 +175,9 @@ MainWindow::MainWindow()
     spreadsheet->addAction(pasteAction);
 
     spreadsheet->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    readSettings();
+
 
     updateStatusBar();
 
@@ -254,6 +262,34 @@ bool MainWindow::loadFile(const QString &fileName)
     return true;
 }
 
+void MainWindow::writeSettings()
+{
+    QSettings settings("Software Inc.", "Spreadsheet");
+
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("recentFiles", recentFiles);
+    settings.setValue("showGrid", showGridAction->isChecked());
+    settings.setValue("autoRecalc", autoRclAction->isChecked());
+}
+
+void MainWindow::readSettings()
+{
+    QSettings setting("Software Inc.", "Spreadsheet");
+
+    restoreGeometry(setting.value("geometry").toByteArray());
+
+    recentFiles = setting.value("recentFiles").toStringList();
+    updateRecentFileActions();
+
+    bool showGrid = setting.value("showGrid", true).toBool();
+    showGridAction->setChecked(showGrid);
+
+    bool autoRecalc = setting.value("autoRecalc", true).toBool();
+    autoRclAction->setChecked(autoRecalc);
+
+
+}
+
 void MainWindow::setCurFile(const QString &filename)
 {
     curFile = filename;
@@ -264,7 +300,7 @@ void MainWindow::setCurFile(const QString &filename)
         shownName = strippedName(curFile);
         recentFiles.removeAll(curFile);
         recentFiles.prepend(curFile);
-        qDebug() << recentFiles.count() << endl;
+//        qDebug() << recentFiles.count() << endl;
         updateRecentFileActions();
     }
     setWindowTitle(tr("%1[*]-%2").arg(shownName).arg(tr("Spreadsheet")));
@@ -307,16 +343,15 @@ bool MainWindow::okTocontinue()
 void MainWindow::updateRecentFileActions()
 {
     QMutableStringListIterator i(recentFiles);
-    qDebug() << "310" << recentFiles.count() << endl;
     while(i.hasNext())
     {
         if(!QFile::exists(i.next()))
             i.remove();
     }
-    qDebug() << "316" << recentFiles.count() << endl;
+//    qDebug() << "316" << recentFiles.count() << endl;
     for(int j = 0; j < MaxRecentFiles; j++)
     {
-        qDebug() << recentFiles.count() << endl;
+
         if(j < recentFiles.count())
         {
 
@@ -336,6 +371,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(okTocontinue())
     {
+        writeSettings();
         event->accept();
     }
     else

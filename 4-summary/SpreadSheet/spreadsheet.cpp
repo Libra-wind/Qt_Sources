@@ -117,11 +117,107 @@ QString Spreadsheet::currentFormula() const
         return "";
 }
 
+QTableWidgetSelectionRange Spreadsheet::selectedRange() const
+{
+    QList<QTableWidgetSelectionRange> ranges = selectedRanges();
+    if(ranges.isEmpty())
+        return QTableWidgetSelectionRange();
+    return ranges.first();
+}
+
 void Spreadsheet::somethingChange()
 {
 
     emit Spreadsheet::modified();
 }
+
+void Spreadsheet::cut()
+{
+    copy();
+    del();
+}
+
+void Spreadsheet::copy()
+{
+    QTableWidgetSelectionRange range = selectedRange();
+    QString str;
+
+    for(int i = 0; i < range.rowCount(); i++)
+    {
+        if(i > 0)
+            str += "\n";
+        for(int j = 0; j < range.columnCount(); j++)
+        {
+            if(j > 0)
+                str += "\t";
+            str += formula(range.topRow()+i, range.leftColumn() + j);
+        }
+
+    }
+    QApplication::clipboard()->setText(str);
+
+}
+
+void Spreadsheet::paste()
+{
+    QTableWidgetSelectionRange range = selectedRange();
+    QString str = QApplication::clipboard()->text();
+    QStringList rows = str.split('\n');
+    int numRows = rows.count();
+    int numCols = rows.first().count('\t') + 1;
+
+
+    if(range.rowCount()*range.columnCount() != 1
+            && (range.rowCount() != numRows || range.columnCount() != numCols))
+    {
+        QMessageBox::information(this, tr("Spreadsheet"),
+                                 tr("The information connot be pasted because the copy "
+                                    "and paste areas aren't the same size."));
+        return;
+    }
+
+
+    for(int i = 0; i < numRows; i++)
+    {
+        QStringList cols = rows[i].split('\t');
+        for(int j = 0; j < numCols; j++)
+        {
+            int row = range.topRow() + i;
+            int column = range.leftColumn() + j;
+            if(row < RowCount && column < ColumnCount)
+                setFormula(row, column, cols[j]);
+
+        }
+
+
+    }
+
+    somethingChange();
+}
+
+void Spreadsheet::del()
+{
+    QList<QTableWidgetItem*> items = selectedItems();
+    if(items.isEmpty())
+    {
+        foreach (QTableWidgetItem *item, items) {
+            delete item;
+            somethingChange();
+        }
+    }
+}
+
+void Spreadsheet::selectCurRow()
+{
+    selectRow(currentRow());
+}
+
+void Spreadsheet::selectCurCol()
+{
+    selectColumn(currentColumn());
+}
+
+
 
 
 

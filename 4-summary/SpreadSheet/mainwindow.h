@@ -68,6 +68,8 @@ private:
     QString curFile;
     QStringList recentFiles;
     bool loadFile(const QString &fileName);
+    void writeSettings();
+    void readSettings();
 private slots:
     void spreadsheetModified();
     void updateStatusBar();
