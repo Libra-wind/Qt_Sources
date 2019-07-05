@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 class QAction;
 class Spreadsheet;
 class QLabel;
-
+class FindDialog;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     void setCurFile(const QString &filename);
     QString strippedName(const QString &fullFileName);
 private:
+    FindDialog *findDialog;
     Spreadsheet *spreadsheet;
     QLabel *locationLabel;
     QLabel *formulaLabel;
@@ -60,6 +62,8 @@ private:
     QAction* recentFileActions[MaxRecentFiles];
     QAction* separatorAction;
 
+
+
     bool okTocontinue();
     void updateRecentFileActions();
 protected:
@@ -67,6 +71,7 @@ protected:
 private:
     QString curFile;
     QStringList recentFiles;
+    //bool findDialog;
     bool loadFile(const QString &fileName);
     void writeSettings();
     void readSettings();
@@ -79,6 +84,8 @@ private slots:
     bool saveFile(const QString &filename);
     bool saveAs();
     void openRecentFile();
+    void find();
+    void gotoCell();
 };
 
 #endif // MAINWINDOW_H

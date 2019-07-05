@@ -1,4 +1,6 @@
 #include <QtGui>
+#include "finddialog.h"
+#include "gotocell.h"
 #include "spreadsheet.h"
 #include "mainwindow.h"
 
@@ -85,12 +87,12 @@ MainWindow::MainWindow()
     findAction = new QAction(tr("&Find.."), this);
     findAction->setShortcut(tr("Ctrl+F"));
     findAction->setIcon(QIcon(":/icons/find.png"));
-
+    connect(findAction, SIGNAL(triggered(bool)), this, SLOT(find()));
 
     go2cellAction = new QAction(tr("&Go to Cell.."), this);
     go2cellAction->setShortcut(tr("Ctrl+G"));
     go2cellAction->setIcon(QIcon(":/icons/go2cell.png"));
-
+    connect(go2cellAction, SIGNAL(triggered(bool)), this, SLOT(gotoCell()));
     editMenu->addAction(cutAction);
     editMenu->addAction(copyAction);
     editMenu->addAction(pasteAction);
@@ -176,6 +178,8 @@ MainWindow::MainWindow()
 
     spreadsheet->setContextMenuPolicy(Qt::ActionsContextMenu);
 
+    findDialog = 0;
+
     readSettings();
 
 
@@ -246,6 +250,32 @@ void MainWindow::openRecentFile()
         QAction *action = qobject_cast<QAction*>(sender());
         if(action)
             loadFile(action->data().toString());
+    }
+}
+
+void MainWindow::find()
+{
+    if(!findDialog)
+    {
+        findDialog = new FindDialog(this);
+
+
+
+    }
+
+    findDialog->show();
+    findDialog->raise();
+    findDialog->activateWindow();
+}
+
+void MainWindow::gotoCell()
+{
+    GoToCellDialog dialog(this);
+    if(dialog.exec())
+    {
+        QString str = dialog.m_lineEdit->text().toUpper();
+        spreadsheet->setCurrentCell(str.mid(1).toInt()-1,
+                                    str[0].unicode()-'A');
     }
 }
 

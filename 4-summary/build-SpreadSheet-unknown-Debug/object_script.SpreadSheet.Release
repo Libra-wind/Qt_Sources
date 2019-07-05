@@ -1,0 +1,13 @@
+INPUT(
+./release\cell.o
+./release\main.o
+./release\spreadsheet.o
+./release\mainwindow.o
+./release\finddialog.o
+./release\gotocell.o
+./release\moc_spreadsheet.o
+./release\moc_mainwindow.o
+./release\moc_finddialog.o
+./release\moc_gotocell.o
+./release\qrc_spreadsheet.o
+);
