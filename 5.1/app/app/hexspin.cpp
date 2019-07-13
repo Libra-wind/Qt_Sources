@@ -15,6 +15,7 @@ QValidator::State HexSpin::validate(QString &input, int &pos) const
 int HexSpin::valueFromText(const QString &text) const
 {
     bool ok;
+
     return text.toInt(&ok, 16);
 }
 
